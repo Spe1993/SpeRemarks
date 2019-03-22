@@ -1,0 +1,106 @@
+  
+  
+  ///通常在新的图层添加到地图时触发
+   private void Map_LayerAdded(object sender, LayerEventArgs e)
+        {
+            try
+            {
+                if (e.Layer is FeatureLayer)
+                {
+                    (e.Layer as FeatureLayer).FeatureSet.AddFid();
+
+                    setHighLightColor(e.Layer as FeatureLayer);
+                    
+                }
+
+                
+
+                map.ZoomToMaxExtent();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+  
+  
+        /// <summary>
+        /// 序列化工具进行序列化时(通常用于打开项目是触发)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SerializationManager_Deserializing(object sender, SerializingEventArgs e)
+        {
+            try
+            {
+                
+
+                foreach (var item in map.GetFeatureLayers())
+                {
+                    item.DataSet.AddFid();
+
+                    FeatureLayer tempLayer = item as FeatureLayer;
+
+                    setHighLightColor(tempLayer);
+                }
+
+              
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /// <summary>
+        /// 设置图层的高亮显示效果
+        /// </summary>
+        /// <param name="tempLayer"></param>
+        private void setHighLightColor(FeatureLayer tempLayer) {
+            try
+            {
+                switch (tempLayer.FeatureSet.FeatureType)
+                {
+                    case FeatureType.Line:
+
+                        tempLayer.SelectionSymbolizer = new LineSymbolizer(Color.Red, Color.DarkRed, 2, System.Drawing.Drawing2D.DashStyle.Solid
+                            , System.Drawing.Drawing2D.LineCap.Round, System.Drawing.Drawing2D.LineCap.Round);
+
+                        break;
+
+                    case FeatureType.MultiPoint:
+                    case FeatureType.Point:
+
+                        tempLayer.SelectionSymbolizer = new PointSymbolizer(Color.Red, DotSpatial.Symbology.PointShape.Star, 2);
+
+                        break;
+
+                    case FeatureType.Polygon:
+                         
+                        tempLayer.SelectionSymbolizer = new PolygonSymbolizer(Color.Red, Color.DarkRed, 2);
+
+
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
+        }
